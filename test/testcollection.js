@@ -122,37 +122,3 @@ movie_details.characters.push({
                 })
         })
     })
-
-
-// describe('/signup', () => {
-    //     it('it should register, login and check our token', (done) => {   // what should 'it' do
-    //         chai.request(server)                            // do a chai request on our server
-    //             .post('/signup')                            // do a post to 'signup'
-    //             .send(login_details)                        // send our login details
-    //             .end((err, res) =>{                         // should return error or response
-    //                 console.log(JSON.stringify(res.body))
-    //                 res.should.have.status(200)                 // check if status is 200
-    //                 res.body.success.should.be.eql(true);       // should have a body
-                    // chai.request(server)                             // do a nother chai request
-                    //     .post('/signin')                             // send a post to 'signin'
-                    //     .send(login_details)                         // send login_details
-                    //     .end((err,res)=>{                            // should return error or response
-                    //         res.should.have.status(200)              // check if status is 200
-                    //         res.body.should.have.property('token');  // make sure youre getting a token back
-                    //         let token = res.body.token;
-                    //         console.log(token)
-
-                            // chai.request(server)                // call a server reqest on our server
-                            //     .put('/testcollection')         // do a put from /testcollection
-                            //     .set('Authorization', token)    // set authorization token to token
-                            //     .send({echo: ''})               // set echo to ''
-                            //     .end((err,res) =>{              // should return error or response
-                            //         res.should.have.status(200)        // should have a 200 status
-                            //         res.body.should.have.property('echo')  // should have a body
-                            //         done();
-                            //     })
-//                         })
-//                 })
-//         });
-//     })
-// })

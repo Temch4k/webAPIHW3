@@ -167,11 +167,15 @@ router.route('/moviecollection')
     })
 
     .get(authJwtController.isAuthenticated, function (req, res) {
-        Movie.find(function (err, movie) {
-            if(err) res.json({message: "Ooops, something is wrong. Read error. \n", error: err});
-            res.json(movie);
+        Movie.find({title: req.body.title}).select('title genre release characters').exec(function (err, movie) {
+            if(err) {
+                res.json({message: "Ooops, something is wrong. Read error. \n", error: err});
+            }
+            else {
+                res.json(movie);
+            }
         })
-    })
+    });
 
 
 app.use('/', router);
