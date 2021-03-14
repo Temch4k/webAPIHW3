@@ -1,8 +1,11 @@
-var mongoose = require('mongoose')          // allow us to connect to mongo data base on atlas
-var Schema = mongoose.Schema                // need our schema for db
+// connects to the mongoose database
+var mongoose = require('mongoose')  
+// need a schema to mess with it
+var Schema = mongoose.Schema                
 
 mongoose.Promise = global.Promise;
 
+// connect to the db
 try{
     mongoose.connect(process.env.DB, {useNewUrlParser: true, useUnifiedTopology: true}, () =>
         console.log("connected"))
@@ -12,7 +15,7 @@ try{
 
 mongoose.set('useCreateIndex', true)
 
-// Movie
+// a movie schema for the db
 var movieSchema = new Schema({
     title: {type: String, required: true},
     release: {type: Date, required: true},
@@ -20,5 +23,5 @@ var movieSchema = new Schema({
     characters: { type: [{actorName: String, characterName: String}], required: true }
 });
 
-// return the model to server
+// return it to the server
 module.exports = mongoose.model('Movie', movieSchema);
