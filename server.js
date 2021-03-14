@@ -185,7 +185,7 @@ router.route('/moviecollection')
                     throw err;
                 }
                 // if movie is null then we never found the movie we were looking for
-                else if(movie.n == null)
+                else if(movie == null)
                 {
                     return res.status(403).json({success: false, message: "Error, can't find the movie"});
                     throw err;
