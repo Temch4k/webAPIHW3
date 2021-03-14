@@ -163,38 +163,67 @@ router.route('/moviecollection')
         })
     })
 
-    // put simply updates a movie in our database by looking up a name
-    .put(authJwtController.isAuthenticated, function (req,res) {        // updates a movie
-        // if the body is empty then the user never submitted the request properly
-        // if the title is empty then we can't look up the movie we are editing
-        // if the update is empty then we don't know what to update
-        if(!req.body || !req.body.title || !req.body.update)
+    // // put simply updates a movie in our database by looking up a name
+    // .put(authJwtController.isAuthenticated, function (req,res) {        // updates a movie
+    //     // if the body is empty then the user never submitted the request properly
+    //     // if the title is empty then we can't look up the movie we are editing
+    //     // if the update is empty then we don't know what to update
+    //     if(!req.body || !req.body.title || !req.body.update)
+    //     {
+    //         return res.status(403).json({success: false, message: "Error: Not all of the information is provided for an update"});
+    //     }
+    //     // we update the movie with given info
+    //     else
+    //     {
+    //         // we update the movie by the title
+    //         Movie.updateMany(req.body.title, req.body.update, function(err, movie)
+    //         {
+    //             // if an error occured then we simply cancel the operation
+    //             if(err)
+    //             {
+    //                 return res.status(403).json({success: false, message: "Error updating a movie"});
+    //                 throw err;
+    //             }
+    //             // if movie is null then we never found the movie we were looking for
+    //             else if(movie.n === 0)
+    //             {
+    //                 return res.status(403).json({success: false, message: "Error, can't find the movie"});
+    //                 throw err;
+    //             }
+    //             // otherwise, if everything went well then we updated the movie
+    //             else
+    //             {
+    //                 return res.status(200).json({success: true, message: "Succsessfully updated the movie"});
+    //                 throw err;
+    //             }
+    //         })
+    //     }
+    // })
+
+    .put(authJwtController.isAuthenticated, function(req, res)
+    {
+        if(!req.body || !req.body.findMovie || !req.body.updateMovieTo)
         {
-            return res.status(403).json({success: false, message: "Error: Not all of the information is provided for an update"});
+            return res.status(403).json({success: false, message: "Error: please provide something that can be updated"});
         }
-        // we update the movie with given info
         else
         {
-            // we update the movie by the title
-            Movie.updateMany(req.body.title, req.body.update, function(err, movie)
+            console.log("FindMovie: " + JSON.stringify(req.body.findMovie));
+            console.log("UpdateMovieTo: " + JSON.stringify(req.body.updateMovieTo));
+            Movie.updateMany(req.body.findMovie, req.body.updateMovieTo, function(err, doc)
             {
-                // if an error occured then we simply cancel the operation
+                console.log(JSON.stringify(doc));
                 if(err)
                 {
-                    return res.status(403).json({success: false, message: "Error updating a movie"});
-                    throw err;
+                    return res.status(403).json({success: false, message: "Error: cannot update movie."});
                 }
-                // if movie is null then we never found the movie we were looking for
-                else if(movie.n == 0)
+                else if(doc.n === 0)
                 {
-                    return res.status(403).json({success: false, message: "Error, can't find the movie"});
-                    throw err;
+                    return res.status(403).json({success: false, message: "Error: could not find movie to update."});
                 }
-                // otherwise, if everything went well then we updated the movie
                 else
                 {
-                    return res.status(200).json({success: true, message: "Succsessfully updated the movie"});
-                    throw err;
+                    return res.status(200).json({success: true, message: "Success: movie has been updated!"});
                 }
             })
         }
