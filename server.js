@@ -168,7 +168,7 @@ router.route('/moviecollection')
         // if the body is empty then the user never submitted the request properly
         // if the title is empty then we can't look up the movie we are editing
         // if the update is empty then we don't know what to update
-        if(!req.body || !req.body.title || !req.body.update)
+        if(!req.body || !req.body.titleFind || !req.body.updateFind)
         {
             return res.status(403).json({success: false, message: "Error: Not all of the information is provided for an update"});
         }
@@ -176,7 +176,7 @@ router.route('/moviecollection')
         else
         {
             // we update the movie by the title
-            Movie.updateMany(req.body.title, req.body.update, function(err, movie)
+            Movie.updateMany(req.body.titleFind, req.body.updateFind, function(err, movie)
             {
                 JSON.stringify(movie);
                 // if an error occured then we simply cancel the operation
