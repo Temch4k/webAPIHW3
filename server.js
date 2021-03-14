@@ -103,7 +103,7 @@ router.route('/moviecollection')
             mov.title = req.body.title
             mov.release = req.body.release
             mov.genre = req.body.genre
-            mov.actors = req.body.actors;
+            mov.characters = req.body.characters;
 
             mov.save(function(err){
                 if (err) {
