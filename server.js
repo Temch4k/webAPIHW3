@@ -168,17 +168,9 @@ router.route('/moviecollection')
         // if the body is empty then the user never submitted the request properly
         // if the title is empty then we can't look up the movie we are editing
         // if the update is empty then we don't know what to update
-        if(!req.body )
+        if(!req.body || !req.body.titleFind || !req.body.updateFind)
         {
             return res.status(403).json({success: false, message: "Error: Not all of the information is provided for an update"});
-        }
-        else if(!req.body.titleFind )
-        {
-            return res.status(403).json({success: false, message: "Error: Movie thats being updated is empty"});
-        }
-        else if(!req.body.updateFind)
-        {
-            return res.status(403).json({success: false, message: "Error: update info is empty"});
         }
         // we update the movie with given info
         else
