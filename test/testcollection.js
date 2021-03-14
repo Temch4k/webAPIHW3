@@ -1,21 +1,22 @@
-let envPath = __dirname + "/../.env";               // "hack" our env path
-require('dotenv').config({path:envPath});    // process.env.SECRET_KEY will have a value
-let chai = require('chai') ;                        // require 'chai'
-let chaiHttp = require('chai-http');                // require 'chai-http' to call our web service
-let server = require('../server');                  // require our server.js file
+let envPath = __dirname + "/../.env";               
+require('dotenv').config({path:envPath});    
+let chai = require('chai') ;                        
+let chaiHttp = require('chai-http');                
+let server = require('../server');                  
 let User = require('../Users');
 
 var token = '';
 chai.should();
-chai.use(chaiHttp);        // tell chai to use chaihttp so it can call webservices
+chai.use(chaiHttp);        
 
-
+// trying to login and sign up with this user
 let login_details = {
     name : 'testtt',
     username : 'ethanaaa',
     password : 'badGuyyyy'
 }
 
+// playing around with this movie
 let movie_details = {
     title : 'qq',
     release : '1998',
@@ -28,29 +29,27 @@ movie_details.characters.push({
 });
 
 
-
+    // sign up operation
     describe('/signup', () => {
-        it('it should register, login and check our token', (done) => {   // what should 'it' do
-            chai.request(server)                            // do a chai request on our server
-                .post('/signup')                            // do a post to 'signup'
-                .send(login_details)                        // send our login details
-                .end((err, res) =>{                         // should return error or response
+        it('it should register, login and check our token', (done) => {   
+            chai.request(server)                            
+                .post('/signup')                            
+                .send(login_details)                        
+                .end((err, res) =>{
                     console.log(JSON.stringify(res.body))
-                    // res.should.have.status(200)                 // check if status is 200
-                    // res.body.success.should.be.eql(true);       // should have a body
                 })
         })
     })
 
+    // signin operation
     describe('/signin', () => {
-        it('will check our log in info', (done) => {   // what should 'it' do
-            chai.request(server)// do a chai request on our server
-                .post('/signin')                            // do a post to 'signup'
-                .send(login_details)                        // send our login details
-                .end((err, res) =>{                         // should return error or response
+        it('will check our log in info', (done) => {   
+            chai.request(server)
+                .post('/signin')                            
+                .send(login_details)                        
+                .end((err, res) =>{                         
                     console.log(JSON.stringify(res.body))
-                    // res.should.have.status(200)                 // check if status is 200
-                    // res.body.success.should.be.eql(true);       // should have a body
+                    // saves us the token
                     if(res.body.msg !== 'Authentication failed.') {
                         token = res.body.token;
                     }
@@ -68,8 +67,6 @@ movie_details.characters.push({
                 .send(movie_details)
                 .end((err, res) =>{
                     console.log(JSON.stringify(res.body))
-                    // res.should.have.status(200)                 // check if status is 200
-                    // res.body.success.should.be.eql(true);       // should have a body
                     done();
                 })
         })
@@ -77,15 +74,13 @@ movie_details.characters.push({
 
     // delets a movie from a database
     describe('/moviecollection', () => {
-        it('deletes a movie from a database', (done) => {   // what should 'it' do
-            chai.request(server)// do a chai request on our server
-                .delete('/moviecollection')                            // do a post to 'signup'
+        it('deletes a movie from a database', (done) => {
+            chai.request(server)
+                .delete('/moviecollection')                            
                 .set('Authorization', token)
-                .send(movie_details)                                        // send our login details
-                .end((err, res) =>{                         // should return error or response
+                .send(movie_details)                                        
+                .end((err, res) =>{                         
                     console.log(JSON.stringify(res.body))
-                    // res.should.have.status(200)                          // check if status is 200
-                    // res.body.success.should.be.eql(true);                // should have a body
                     done();
                 })
         })
@@ -94,14 +89,12 @@ movie_details.characters.push({
     // returns a movie from a database
     describe('/moviecollection', () => {
         it('adds a movie to the database', (done) => {
-            chai.request(server)// do a chai request on our server
+            chai.request(server)
                 .get('/moviecollection')
                 .set('Authorization', token)
                 .send(movie_details)
-                .end((err, res) =>{                         // should return error or response
+                .end((err, res) =>{                        
                     console.log(JSON.stringify(res.body))
-                    // res.should.have.status(200)                 // check if status is 200
-                    // res.body.success.should.be.eql(true);       // should have a body
                     done();
                 })
         })
@@ -111,13 +104,11 @@ movie_details.characters.push({
     describe('/moviecollection', () => {
         it('updates a movie in the database', (done) => {
             chai.request(server)// do a chai request on our server
-                .put('/moviecollection')                            // do a post to 'signup'
+                .put('/moviecollection')                            
                 .set('Authorization', token)
-                .send(movie_details)                        // send our login details
-                .end((err, res) =>{                         // should return error or response
+                .send(movie_details)                        
+                .end((err, res) =>{                        
                     console.log(JSON.stringify(res.body))
-                    // res.should.have.status(200)                 // check if status is 200
-                    // res.body.success.should.be.eql(true);       // should have a body
                     done();
                 })
         })
