@@ -4,7 +4,7 @@ var bcrypt = require('bcrypt-nodejs');
 
 mongoose.Promise = global.Promise;
 
-//mongoose.connect(process.env.DB, { useNewUrlParser: true });
+// connects us to the db
 try {
     mongoose.connect( process.env.DB, {useNewUrlParser: true, useUnifiedTopology: true}, () =>
         console.log("connected"));
@@ -13,13 +13,14 @@ try {
 }
 mongoose.set('useCreateIndex', true);
 
-// user schema
+// schema for our user
 var UserSchema = new Schema({
     name: String,
     username: { type: String, required: true, index: { unique: true }},
     password: { type: String, required: true, select: false }
 });
 
+// how we save a user
 UserSchema.pre('save', function(next) {
     var user = this;
 
