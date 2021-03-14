@@ -139,29 +139,26 @@ router.route('/moviecollection')
     })
 
     .put(authJwtController.isAuthenticated, function (req,res) {        // updates a movie
-        if(!req.body || !req.body.findMovie || !req.body.updateMovieTo)
+        var id = {movieID: req.params.id};
+        Movie.findOne({title: req.body.title}, function(err, found)
         {
-            return res.status(403).json({success: false, message: "Error: please provide something that can be updated"});
-        }
-        else{
-            res.json({msg:'FindMovie: ' + JSON.stringify(req.body.findMovie)+ 'UpdateMovieTo: ' + JSON.stringify(req.body.updateMovieTo)});
-            Movie.updateMany(req.body.findMovie, req.body.updateMovieTo, function(err, output)
+            if (err)
             {
-                console.log(JSON.stringify(output));
-                if(err)
-                {
-                    return res.status(403).json({success: false, message: "Error: editing a movie"});
-                }
-                else if(output.n == null)
-                {
-                    return res.status(402).json({success: false, message: "Error: no movie was found"});
-                }
-                else
-                {
-                    return res.status(200).json({success: true, message: "Movie updated successfully"});
-                }
-            })
-        }
+                res.json({message: "Error reading the movie \n", error: err});
+            }
+            else
+            {
+                Movie.updateOne(id, req.body)
+                    .then(movieUpdate => {
+                        if (!movieUpdate)
+                        {
+                            return res.status(404).end();
+                        }
+                        return res.status(200).json({msg: "Movie was updated succsessfully"})
+                    })
+                    .catch(err => next(err))
+            }
+        })
     })
 
     .get(authJwtController.isAuthenticated, function (req, res) {
