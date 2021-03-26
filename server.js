@@ -242,6 +242,10 @@ router.route('/moviecollection')
 router.route('/reviews')
     .post(authJwtController.isAuthenticated, function(req, res){
         Movie.findOne({title: req.body.title}).select('title').exec(function (err, movie) {
+            let usertoken = req.headers.authorization;
+            let token = usertoken.split(' ');
+            let decoded = jwt.verify(token[1], process.env.SECRET_KEY);
+
             // if we have an error then we display it
             if (err) {
                 res.json({message: "Something is wrong: \n", error: err});
@@ -252,7 +256,7 @@ router.route('/reviews')
                 if(movie != null)
                 {
                     let review = new Review()
-                    review.name = req.body.name;
+                    review.name = decoded.username;
                     review.comment = req.body.comment;
                     review.rating = req.body.rating;
                     review.title = req.body.title;
