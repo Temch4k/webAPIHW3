@@ -28,18 +28,25 @@ movie_details.characters.push({
     actorName:'anathan'
 });
 
+let reviewdetails = {
+    name : 'Robr',
+    comment : "yes",
+    rating : "4.4",
+    title : "Avatar"
+}
 
-    // sign up operation
-    describe('/signup', () => {
-        it('it should register, login and check our token', (done) => {   
-            chai.request(server)                            
-                .post('/signup')                            
-                .send(login_details)                        
-                .end((err, res) =>{
-                    console.log(JSON.stringify(res.body))
-                })
-        })
-    })
+
+    // // sign up operation
+    // describe('/signup', () => {
+    //     it('it should register, login and check our token', (done) => {
+    //         chai.request(server)
+    //             .post('/signup')
+    //             .send(login_details)
+    //             .end((err, res) =>{
+    //                 console.log(JSON.stringify(res.body))
+    //             })
+    //     })
+    // })
 
     // signin operation
     describe('/signin', () => {
@@ -58,13 +65,12 @@ movie_details.characters.push({
         })
     })
 
-    //adds a movie to the database
-    describe('/moviecollection', () => {
-        it('adds a movie to the database', (done) => {
+    describe('/reviews', () => {
+        it('adds review', (done) => {
             chai.request(server)
-                .post('/moviecollection')
+                .post('/reviews')
                 .set('Authorization', token)
-                .send(movie_details)
+                .send(reviewdetails)
                 .end((err, res) =>{
                     console.log(JSON.stringify(res.body))
                     done();
@@ -72,44 +78,58 @@ movie_details.characters.push({
         })
     })
 
-    // delets a movie from a database
-    describe('/moviecollection', () => {
-        it('deletes a movie from a database', (done) => {
-            chai.request(server)
-                .delete('/moviecollection')                            
-                .set('Authorization', token)
-                .send(movie_details)                                        
-                .end((err, res) =>{                         
-                    console.log(JSON.stringify(res.body))
-                    done();
-                })
-        })
-    })
-
-    // returns a movie from a database
-    describe('/moviecollection', () => {
-        it('adds a movie to the database', (done) => {
-            chai.request(server)
-                .get('/moviecollection')
-                .set('Authorization', token)
-                .send(movie_details)
-                .end((err, res) =>{                        
-                    console.log(JSON.stringify(res.body))
-                    done();
-                })
-        })
-    })
-
-    //updates a movie in the database
-    describe('/moviecollection', () => {
-        it('updates a movie in the database', (done) => {
-            chai.request(server)// do a chai request on our server
-                .put('/moviecollection')                            
-                .set('Authorization', token)
-                .send(movie_details)                        
-                .end((err, res) =>{                        
-                    console.log(JSON.stringify(res.body))
-                    done();
-                })
-        })
-    })
+    // //adds a movie to the database
+    // describe('/moviecollection', () => {
+    //     it('adds a movie to the database', (done) => {
+    //         chai.request(server)
+    //             .post('/moviecollection')
+    //             .set('Authorization', token)
+    //             .send(movie_details)
+    //             .end((err, res) =>{
+    //                 console.log(JSON.stringify(res.body))
+    //                 done();
+    //             })
+    //     })
+    // })
+    //
+    // // delets a movie from a database
+    // describe('/moviecollection', () => {
+    //     it('deletes a movie from a database', (done) => {
+    //         chai.request(server)
+    //             .delete('/moviecollection')
+    //             .set('Authorization', token)
+    //             .send(movie_details)
+    //             .end((err, res) =>{
+    //                 console.log(JSON.stringify(res.body))
+    //                 done();
+    //             })
+    //     })
+    // })
+    //
+    // // returns a movie from a database
+    // describe('/moviecollection', () => {
+    //     it('adds a movie to the database', (done) => {
+    //         chai.request(server)
+    //             .get('/moviecollection')
+    //             .set('Authorization', token)
+    //             .send(movie_details)
+    //             .end((err, res) =>{
+    //                 console.log(JSON.stringify(res.body))
+    //                 done();
+    //             })
+    //     })
+    // })
+    //
+    // //updates a movie in the database
+    // describe('/moviecollection', () => {
+    //     it('updates a movie in the database', (done) => {
+    //         chai.request(server)// do a chai request on our server
+    //             .put('/moviecollection')
+    //             .set('Authorization', token)
+    //             .send(movie_details)
+    //             .end((err, res) =>{
+    //                 console.log(JSON.stringify(res.body))
+    //                 done();
+    //             })
+    //     })
+    // })

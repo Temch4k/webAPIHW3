@@ -220,7 +220,7 @@ router.route('/moviecollection')
 
 router.route('/reviews')
     .post(authJwtController.isAuthenticated, function(req, res){
-        Movie.find({title: req.body.title}).select('title _id').exec(function (err, movie) {
+        Movie.findOne({title: req.body.title}).select('title').exec(function (err, movie) {
             // if we have an error then we display it
             if (err) {
                 res.json({message: "Something is wrong: \n", error: err});
@@ -233,9 +233,11 @@ router.route('/reviews')
                     let review = new Review()
                     review.name = req.body.name;
                     review.comment = req.body.comment;
-                    review.rating = req.body.genre;
-                    review.movieTitle = req.body.title;
-                    review.movieID = movie.id;
+                    review.rating = req.body.rating;
+                    review.title = req.body.title;
+                    review.movieid = movie.id;
+
+                    console.log(review);
                     // then call a save command,
                     review.save(function (err) {
                         // if error then something went wrong, like a review with the same name already exists
