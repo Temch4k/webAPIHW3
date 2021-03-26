@@ -210,7 +210,7 @@ router.route('/moviecollection')
         Movie.findOne({title: req.body.title}).select('title genre release characters').exec(function (err, movie) {
             // if we have an error then we display it
             if(err) {
-                res.json({message: "Something is wrong: \n", error: err});
+                return res.status(401).json({message: "Something is wrong: \n", error: err});
             }
             // otherwise just show the movie that was returned
             else if(movie == null)
@@ -232,7 +232,7 @@ router.route('/moviecollection')
                 }
                 else
                 {
-                    res.json(movie);
+                    return res.status(200).json(movie);
                 }
 
             }
@@ -242,12 +242,15 @@ router.route('/moviecollection')
 router.route('/reviews')
     .post(authJwtController.isAuthenticated, function(req, res){
         Movie.findOne({title: req.body.title}).select('title').exec(function (err, movie) {
+
+            // My friend Oleksiy helped me with it
             let usertoken = req.headers.authorization;
             let token = usertoken.split(' ');
             let decoded = jwt.verify(token[1], process.env.SECRET_KEY);
 
             // if we have an error then we display it
-            if (err) {
+            if (err)
+            {
                 res.json({message: "Something is wrong: \n", error: err});
             }
             // otherwise just show the review that was returned
@@ -267,15 +270,17 @@ router.route('/reviews')
                     review.save(function (err) {
                         // if error then something went wrong, like a review with the same name already exists
                         if (err) {
-                            console.log("sorry we ran into an error")
-                            res.json({success: false, msg: 'we have an error posting'})
-                            throw err
+                            return res.status(401).json({success: false, msg: 'we have an error posting'})
                         }
                         // otherwise we are good, and the movie has been added
                         else {
-                            res.json({success: true, msg: 'Review added successfully'})
+                            return res.status(200).json({success: true, msg: 'Review added successfully'})
                         }
                     })
+                }
+                else
+                {
+                    return res.status(404).json({success: false, msg:'Error. Movie not found'});
                 }
             }
         })
@@ -285,5 +290,3 @@ router.route('/reviews')
 app.use('/', router);
 app.listen(process.env.PORT || 8080);
 module.exports = app; // for testing only
-
-
