@@ -235,7 +235,7 @@ router.route('/reviews')
                     review.comment = req.body.comment;
                     review.rating = req.body.genre;
                     review.movieTitle = req.body.title;
-                    review.movieID = movie.movieID;
+                    review.movieID = movie.id;
                     // then call a save command,
                     review.save(function (err) {
                         // if error then something went wrong, like a review with the same name already exists
