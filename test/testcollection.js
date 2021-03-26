@@ -18,15 +18,13 @@ let login_details = {
 
 // playing around with this movie
 let movie_details = {
-    title : 'qq',
-    release : '1998',
-    genre : 'Horror',
-    characters : []
+    title : 'Underworld',
+    review :'true',
 }
-movie_details.characters.push({
-    characterName:'vonathan',
-    actorName:'anathan'
-});
+// movie_details.characters.push({
+//     characterName:'vonathan',
+//     actorName:'anathan'
+// });
 
 let reviewdetails = {
     name : 'Robr',
@@ -65,18 +63,18 @@ let reviewdetails = {
         })
     })
 
-    describe('/reviews', () => {
-        it('adds review', (done) => {
-            chai.request(server)
-                .post('/reviews')
-                .set('Authorization', token)
-                .send(reviewdetails)
-                .end((err, res) =>{
-                    console.log(JSON.stringify(res.body))
-                    done();
-                })
-        })
-    })
+    // describe('/reviews', () => {
+    //     it('adds review', (done) => {
+    //         chai.request(server)
+    //             .post('/reviews')
+    //             .set('Authorization', token)
+    //             .send(reviewdetails)
+    //             .end((err, res) =>{
+    //                 console.log(JSON.stringify(res.body))
+    //                 done();
+    //             })
+    //     })
+    // })
 
     // //adds a movie to the database
     // describe('/moviecollection', () => {
@@ -106,19 +104,19 @@ let reviewdetails = {
     //     })
     // })
     //
-    // // returns a movie from a database
-    // describe('/moviecollection', () => {
-    //     it('adds a movie to the database', (done) => {
-    //         chai.request(server)
-    //             .get('/moviecollection')
-    //             .set('Authorization', token)
-    //             .send(movie_details)
-    //             .end((err, res) =>{
-    //                 console.log(JSON.stringify(res.body))
-    //                 done();
-    //             })
-    //     })
-    // })
+    // returns a movie from a database
+    describe('/moviecollection', () => {
+        it('adds a movie to the database', (done) => {
+            chai.request(server)
+                .get('/moviecollection')
+                .set('Authorization', token)
+                .send(movie_details)
+                .end((err, res) =>{
+                    console.log(JSON.stringify(res.body))
+                    done();
+                })
+        })
+    })
     //
     // //updates a movie in the database
     // describe('/moviecollection', () => {

@@ -1,7 +1,7 @@
 /*
     Name : Artsiom Skarakhod
-    Project : Homework 3
-    Description : Web API for Movie API
+    Project : Homework 4
+    Description : Reviews
  */
 var express = require('express');
 var http = require('http');
@@ -13,6 +13,7 @@ var cors = require('cors');
 var User = require('./Users');
 var Movie = require('./Movies');
 var Review = require('./reviews');
+var mongoose = require('mongoose');
 
 
 
@@ -206,14 +207,30 @@ router.route('/moviecollection')
     .get(authJwtController.isAuthenticated, function (req, res) {
         // find the movie using the request title
         // .select is there to tell us what will be returned
-        Movie.find({title: req.body.title}).select('title genre release characters').exec(function (err, movie) {
+        Movie.findOne({title: req.body.title}).select('title genre release characters').exec(function (err, movie) {
             // if we have an error then we display it
             if(err) {
                 res.json({message: "Something is wrong: \n", error: err});
             }
             // otherwise just show the movie that was returned
             else {
-                res.json(movie);
+                if(req.body.review === "true")
+                {
+                    Review.find({movieid: movie.id}).select('name comment rating').exec(function (err, review){
+                        if(err)
+                        {
+                            return res.status(403).json({success: false, message: "Error: movie not found. (with review parameter)"});
+                        }
+                        else {
+                             return res.status(200).json({Movie: movie, MovieReviews: review});
+                        }
+                    });
+                }
+                else
+                {
+                    res.json(movie);
+                }
+
             }
         })
     });
