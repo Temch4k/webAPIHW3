@@ -1,4 +1,6 @@
-# webAPIHW3 :D
+# Artsiom Skarakhod web API HW4
+- edited my homework 3 into homework 4
+
 Heroku app for hw5 part
 https://webapi-hw-35.herokuapp.com/#/
 
