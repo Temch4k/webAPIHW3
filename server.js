@@ -86,7 +86,7 @@ router.post('/signin', function (req, res) {
                 else{
                     res.status(401).send({success: false, msg: 'Authentication failed.'})
                 }
-        })
+            })
         }
     })
 });
@@ -117,7 +117,7 @@ router.route('/moviecollection')
         // if one of the fields are empty it won't let you add the movie
         else if (req.body.title === ''|| req.body.release === '' || req.body.genre === ''|| error ){
             res.json({success: false, msg: 'Please make sure you have entered all fields'})
-        // otherwise we simply add the movie request into a temp movie
+            // otherwise we simply add the movie request into a temp movie
         } else {
             let mov = new Movie()
             mov.title = req.body.title
@@ -226,7 +226,7 @@ router.route('/moviecollection')
                             return res.status(403).json({success: false, message: "Sorry we ran into an issue"});
                         }
                         else {
-                             return res.status(200).json({Movie: movie, MovieReviews: review});
+                            return res.status(200).json({Movie: movie, MovieReviews: review});
                         }
                     });
                 }

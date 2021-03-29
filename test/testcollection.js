@@ -34,17 +34,17 @@ let reviewdetails = {
 }
 
 
-    // // sign up operation
-    // describe('/signup', () => {
-    //     it('it should register, login and check our token', (done) => {
-    //         chai.request(server)
-    //             .post('/signup')
-    //             .send(login_details)
-    //             .end((err, res) =>{
-    //                 console.log(JSON.stringify(res.body))
-    //             })
-    //     })
-    // })
+    // sign up operation
+    describe('/signup', () => {
+        it('it should register, login and check our token', (done) => {
+            chai.request(server)
+                .post('/signup')
+                .send(login_details)
+                .end((err, res) =>{
+                    console.log(JSON.stringify(res.body))
+                })
+        })
+    })
 
     // signin operation
     describe('/signin', () => {
