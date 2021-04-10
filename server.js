@@ -98,6 +98,41 @@ router.post('/signin', function (req, res) {
 
 // this is where we manipulate the database
 router.route('/moviecollection')
+    // gets all movies
+    .get(authJwtController.isAuthenticated, function (req, res) {
+        // find the movie using the request title
+        // .select is there to tell us what will be returned
+        Movie.find().select('title genre release characters').exec(function (err, movie) {
+            // if we have an error then we display it
+            if(err) {
+                return res.status(401).json({message: "Something is wrong: \n", error: err});
+            }
+            // otherwise just show the movie that was returned
+            else if(movie == null)
+            {
+                return res.status(404).json({success: false, message: "Error: movies not found."});
+            }
+            else {
+                // if(req.query !== null && req.query.review === "true")
+                // {
+                //     Review.find({movieid: movie.id}).select('name comment rating').exec(function (err, review){
+                //         if(err)
+                //         {
+                //             return res.status(403).json({success: false, message: "Sorry we ran into an issue"});
+                //         }
+                //         else {
+                //             return res.status(200).json({Movie: movie, MovieReviews: review});
+                //         }
+                //     });
+                // }
+                // else
+                // {
+                    return res.status(200).json(movie);
+                // }
+
+            }
+        })
+    })
     // post adds a movie
     .post(authJwtController.isAuthenticated, function(req,res){            // create new movie
         var numOfChars = req.body.characters.length;
