@@ -26,9 +26,9 @@ app.use(passport.initialize());
 
 var router = express.Router();
 
-app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin : *")
-  }) 
+// app.use((req, res, next) => {
+//     res.header("Access-Control-Allow-Origin : *")
+//   }) 
 
   var cors = require('cors');
     app.use(cors());
