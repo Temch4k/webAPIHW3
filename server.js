@@ -113,22 +113,48 @@ router.route('/moviecollection')
                 return res.status(404).json({success: false, message: "Error: movies not found."});
             }
             else {
-                // if(req.query !== null && req.query.review === "true")
-                // {
-                //     Review.find({movieid: movie.id}).select('name comment rating').exec(function (err, review){
-                //         if(err)
-                //         {
-                //             return res.status(403).json({success: false, message: "Sorry we ran into an issue"});
-                //         }
-                //         else {
-                //             return res.status(200).json({Movie: movie, MovieReviews: review});
-                //         }
-                //     });
-                // }
-                // else
-                // {
+                if(req.query !== null && req.query.review === "true")
+                {
+                     //console.log("query reviews: true");
+                Movie.aggregate()
+                .match(req.body)
+                .lookup({from: 'reviews', localField: '_id', foreignField: 'movieid', as: 'reviews'})
+                .exec(function (err, movie) {
+                    if (err)
+                    {
+                        return res.send(err);
+                    }
+                    if (movie && movie.length > 0) {
+                        for (let a = 0; a < movie.length; a++) {
+                            let total = 0;
+                            for (let b = 0; b < movie[a].reviews.length; b++) {
+                                total += movie[a].reviews[b].rating;
+                            }
+                            if (movie[a].reviews.length > 0) {
+                                movie[a] = Object.assign({}, movie[a],
+                                    {avgRating: (total/movie[a].reviews.length).toFixed(1)});
+                            }
+                        }
+                        movie.sort((a,b) => {
+                            return b.avgRating - a.avgRating;
+                        });
+                        return res.status(200).json({
+                            success: true,
+                            result: movie
+                        });
+                    }
+                    else {
+                        return res.status(403).json({
+                            success: false,
+                            message: "Movie not found."
+                        });
+                    }
+                });
+            }
+                else
+                {
                     return res.status(200).json(movie);
-                // }
+                }
 
             }
         })
