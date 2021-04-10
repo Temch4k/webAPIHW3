@@ -26,12 +26,13 @@ app.use(passport.initialize());
 
 var router = express.Router();
 
+
 // copied from Shawn and homework 2
 // goes to sign up, if a field is empty, it won't let the user to be created
 router.post('/signup', function(req, res) {
     // checks if the fields are empty
     if (!req.body.username || !req.body.password) {
-        res.json({success: false, msg: 'Please include both username and password to signup.'})
+        res.status(400).json({success: false, msg: 'Please include both username and password to signup.'})
         //if they arent create a user
     }else {
         var user = new User()
@@ -41,10 +42,14 @@ router.post('/signup', function(req, res) {
 
         // we save the user and if run into an error then we put the error out
         user.save(function(err){
+            // if there is an error
             if (err) {
-                if (err.code === 11000) return res.json({success: false, message: 'A user with that username already exist'})
+                if (err.code === 11000) 
+                {
+                    return res.status(403).json({success: false, message: 'A user with that username already exist'})
+                }
                 else
-                    return res.json(err)
+                    return res.status(400).json(err)
             }
             // otherwise send a happy note
             console.log("created new user")
@@ -70,8 +75,7 @@ router.post('/signin', function (req, res) {
         // if the user returns as a null that means we never found the username
         if(user == null)
         {
-            res.json({success: false, msg: 'No user found with the following username'})
-            res.status(401).send({success: false, msg: 'Authentication failed.'})
+            res.status(401).json({success: false, msg: 'No user found with the following username'})
         }
         else{
             // if we did find a user, then we compare the password that was in our databas to the input
@@ -80,7 +84,7 @@ router.post('/signin', function (req, res) {
                 if(isMatch){
                     var userToken = {id: user.id, username: user.username}
                     var token = jwt.sign(userToken, process.env.SECRET_KEY)
-                    res.json({success: true, token: 'JWT ' + token})
+                    res.status(200).json({success: true, token: 'JWT ' + token})
                 }
                 // otherwise wrong password
                 else{
@@ -112,11 +116,11 @@ router.route('/moviecollection')
         // if there are less than 3 characters in a movie it won't let you add that movie
         if(numOfChars<3)
         {
-            res.json({success: false, msg: 'Must have at least 3 movie characters'})
+            res.status(400).json({success: false, msg: 'Must have at least 3 movie characters'})
         }
         // if one of the fields are empty it won't let you add the movie
         else if (req.body.title === ''|| req.body.release === '' || req.body.genre === ''|| error ){
-            res.json({success: false, msg: 'Please make sure you have entered all fields'})
+            res.status(400).json({success: false, msg: 'Please make sure you have entered all fields'})
             // otherwise we simply add the movie request into a temp movie
         } else {
             let mov = new Movie()
@@ -130,12 +134,12 @@ router.route('/moviecollection')
                 // if error then something went wrong, like a movie with the same name already exists
                 if (err) {
                     console.log("sorry we ran into an error")
-                    res.json({success: false, msg: 'we have an error posting'})
+                    res.status(400).json({success: false, msg: 'we have an error posting'})
                     throw err
                 }
                 // otherwise we are good, and the movie has been added
                 else{
-                    res.json({success: true, msg: 'Movie added successfully'})
+                    res.status(200).json({success: true, msg: 'Movie added successfully'})
                 }
             })
         }
@@ -148,7 +152,7 @@ router.route('/moviecollection')
             // if there is an error then something went wrong
             if (err)
             {
-                res.json({success: false, msg: 'error occured'})
+                res.status(400).json({success: false, msg: 'error occured'})
                 console.log("could not delete")
                 throw err
             }
@@ -156,11 +160,11 @@ router.route('/moviecollection')
             else if(movie !== null)
             {
                 console.log("Movie Deleted")
-                res.json({success: true, msg: 'movie deleted successfully'})
+                res.status(200).json({success: true, msg: 'movie deleted successfully'})
             }
             // if the mvie is returned null then we never found a movie in the database with the same name
             else {
-                res.json({success: false, msg: 'no movie was found'})
+                res.status(400).json({success: false, msg: 'no movie was found'})
             }
         })
     })
@@ -251,7 +255,7 @@ router.route('/reviews')
             // if we have an error then we display it
             if (err)
             {
-                res.json({message: "Something is wrong: \n", error: err});
+                res.status(400).json({message: "Something is wrong: \n", error: err});
             }
             // otherwise just show the review that was returned
             else
