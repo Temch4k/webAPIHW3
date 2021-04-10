@@ -212,7 +212,7 @@ router.route('/moviecollection/:movieTitle')
     .get(authJwtController.isAuthenticated, function (req, res) {
         // find the movie using the request title
         // .select is there to tell us what will be returned
-        Movie.findOne({title: req.params.movieid}).select('title genre release characters').exec(function (err, movie) {
+        Movie.findOne({title: req.params.movieTitle}).select('title genre release characters').exec(function (err, movie) {
             // if we have an error then we display it
             if(err) {
                 return res.status(401).json({message: "Something is wrong: \n", error: err});
