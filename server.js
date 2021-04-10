@@ -207,11 +207,12 @@ router.route('/moviecollection')
         }
     })
 
+router.route('/moviecollection/:movieTitle')
     // gets movie information by looking up it's name
     .get(authJwtController.isAuthenticated, function (req, res) {
         // find the movie using the request title
         // .select is there to tell us what will be returned
-        Movie.findOne({title: req.body.title}).select('title genre release characters').exec(function (err, movie) {
+        Movie.findOne({title: req.params.movieid}).select('title genre release characters').exec(function (err, movie) {
             // if we have an error then we display it
             if(err) {
                 return res.status(401).json({message: "Something is wrong: \n", error: err});
@@ -222,7 +223,7 @@ router.route('/moviecollection')
                 return res.status(401).json({success: false, message: "Error: movie not found."});
             }
             else {
-                if(req.body.review === "true")
+                if(req.query !== null && req.query.review === "true")
                 {
                     Review.find({movieid: movie.id}).select('name comment rating').exec(function (err, review){
                         if(err)
