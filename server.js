@@ -26,6 +26,10 @@ app.use(passport.initialize());
 
 var router = express.Router();
 
+app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", "*")
+  }) 
+
 // copied from Shawn and homework 2
 // goes to sign up, if a field is empty, it won't let the user to be created
 router.post('/signup', function(req, res) {
