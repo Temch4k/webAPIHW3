@@ -125,19 +125,29 @@ router.route('/moviecollection')
                         {
                             return res.send(err);
                         }
+
+                        // fix avg review scores
                         var numOfMovies = movie.length;
                         if (movie && numOfMovies > 0) 
                         {
-                            for (let j = 0; j < movie.length; j++) {
-                                let total = 0;
-                                for (let i = 0; i < movie[j].reviews.length; i++) {
-                                    total += movie[j].reviews[i].rating;
-                                }
-                                if (movie[j].reviews.length > 0) {
-                                    movie[j] = Object.assign({}, movie[j],
-                                        {avgRating: (total/movie[j].reviews.length).toFixed(1)});
-                                }
-                            }
+                            movie.forEach(function(movieParam)
+                            {
+                                //total reviews
+                                let reviewSum = 0;
+
+                                //calculate average
+                                //append average to movie
+
+                                //for every review, add rating
+                                movieParam.reviews.forEach(function(reviewsParam)
+                                {
+                                    //add rating
+                                    reviewSum = reviewSum + reviewsParam.rating;
+                                });
+
+                                if(movieParam.reviews.length > 0)
+                                    Object.assign(movieParam, {avgRating: (reviewSum/movieParam.reviews.length).toFixed(2)});
+                            });
                             movie.sort((a,b) => {
                                 return b.avgRating - a.avgRating;
                             });
