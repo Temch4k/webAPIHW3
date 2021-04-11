@@ -139,7 +139,7 @@ router.route('/moviecollection')
                                 {
                                     // calculate the average by dividing total number adde by movie's num of reviews
                                     movie[j] = Object.assign({}, movie[j],
-                                        {avgRating: (total/movie[j].reviews.length).toFixed(1)});
+                                        {avgRating: (totalNum/movie[j].reviews.length).toFixed(1)});
                                 }
                             }
                             movie.sort((a,b) => {
