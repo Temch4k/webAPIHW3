@@ -108,7 +108,7 @@ let reviewdetails = {
     describe('/moviecollection', () => {
         it('adds a movie to the database', (done) => {
             chai.request(server)
-                .get('/moviecollection')
+                .get('/moviecollection?review=true')
                 .set('Authorization', token)
                 .send(movie_details)
                 .end((err, res) =>{
