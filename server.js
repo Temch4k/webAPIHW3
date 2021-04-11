@@ -128,18 +128,14 @@ router.route('/moviecollection')
                         var numOfMovies = movie.length;
                         if (movie && numOfMovies > 0) 
                         {
-                            for (let a = 0; a < numOfMovies; a++) 
-                            {
-                                let totalNum = 0;
-                                for (let b = 0; b < movie[a].reviews.length; b++) 
-                                {
-                                    totalNum += movie[a].reviews[b].rating;
+                            for (let j = 0; j < movie.length; j++) {
+                                let total = 0;
+                                for (let i = 0; i < movie[j].reviews.length; i++) {
+                                    total += movie[j].reviews[i].rating;
                                 }
-                                if (movie[a].reviews.length > 0) 
-                                {
-                                    // calculate the average by dividing total number adde by movie's num of reviews
+                                if (movie[j].reviews.length > 0) {
                                     movie[j] = Object.assign({}, movie[j],
-                                        {avgRating: (totalNum/movie[j].reviews.length).toFixed(1)});
+                                        {avgRating: (total/movie[j].reviews.length).toFixed(1)});
                                 }
                             }
                             movie.sort((a,b) => {
