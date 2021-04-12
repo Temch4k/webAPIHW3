@@ -29,30 +29,31 @@ var router = express.Router();
 
 // copied from Shawn and homework 2
 // goes to sign up, if a field is empty, it won't let the user to be created
-router.post('/signup', function (req, res) {
+router.post('/signup', function(req, res) {
     // checks if the fields are empty
     if (!req.body.username || !req.body.password) {
-        res.status(400).json({ success: false, msg: 'Please include both username and password to signup.' })
+        res.status(400).json({success: false, msg: 'Please include both username and password to signup.'})
         //if they arent create a user
-    } else {
+    }else {
         var user = new User()
         user.name = req.body.name
         user.username = req.body.username
         user.password = req.body.password
 
         // we save the user and if run into an error then we put the error out
-        user.save(function (err) {
+        user.save(function(err){
             // if there is an error
             if (err) {
-                if (err.code === 11000) {
-                    return res.status(403).json({ success: false, message: 'A user with that username already exist' })
+                if (err.code === 11000) 
+                {
+                    return res.status(403).json({success: false, message: 'A user with that username already exist'})
                 }
                 else
                     return res.status(400).json(err)
             }
             // otherwise send a happy note
             console.log("created new user")
-            return res.status(200).json({ success: true, message: "Successfully created new user." });
+            return res.status(200).json({success: true, message: "Successfully created new user."});
         })
     }
 });
@@ -65,28 +66,29 @@ router.post('/signin', function (req, res) {
     userNew.password = req.body.password
 
     // we find the user's username
-    User.findOne({ username: userNew.username }).select('name username password').exec(function (err, user) {
-        if (err) {
+    User.findOne({username: userNew.username}).select('name username password').exec(function(err, user){
+        if(err){
             res.send(err)
             throw err
         }
 
         // if the user returns as a null that means we never found the username
-        if (user == null) {
-            res.status(401).json({ success: false, msg: 'No user found with the following username' })
+        if(user == null)
+        {
+            res.status(401).json({success: false, msg: 'No user found with the following username'})
         }
-        else {
+        else{
             // if we did find a user, then we compare the password that was in our databas to the input
-            user.comparePassword(userNew.password, function (isMatch) {
+            user.comparePassword(userNew.password, function(isMatch){
                 // if its matched we create a user token and send it to them
-                if (isMatch) {
-                    var userToken = { id: user.id, username: user.username }
+                if(isMatch){
+                    var userToken = {id: user.id, username: user.username}
                     var token = jwt.sign(userToken, process.env.SECRET_KEY)
-                    res.status(200).json({ success: true, token: 'JWT ' + token })
+                    res.status(200).json({success: true, token: 'JWT ' + token})
                 }
                 // otherwise wrong password
-                else {
-                    res.status(401).send({ success: false, msg: 'Authentication failed.' })
+                else{
+                    res.status(401).send({success: false, msg: 'Authentication failed.'})
                 }
             })
         }
@@ -98,84 +100,89 @@ router.post('/signin', function (req, res) {
 router.route('/moviecollection')
     // gets all movies
     .get(authJwtController.isAuthenticated, function (req, res) {
-        if(!req.body)
-        {
-            return res.status(403).json({success: false, message: "Empty query"});
-        }
         // find the movie using the request title
-        if (req.query !== null && req.query.review === "true") {
-            //console.log("query reviews: true");
-            Movie.aggregate()
-                .match(req.body)
-                .lookup({ from: 'reviews', localField: '_id', foreignField: 'movieid', as: 'reviews' })
-                .exec(function (err, movie) {
-                    if (err) {
-                        return res.send(err);
-                    }
-
-                    // fix avg review scores
-                    var numOfMovies = movie.length;
-                    if (movie && numOfMovies > 0) {
-                        movie.forEach(function (mp) {
-                            var totalSum = 0;
-                            mp.reviews.forEach(function (rp) {
-                                // add the reviews together into one variable
-                                totalSum = totalSum + rp.rating;
-                            });
-
-                            if (mp.reviews.length > 0)
-                                Object.assign(mp, { avgRating: (totalSum / mp.reviews.length).toFixed(2) });
-                        });
-                        movie.sort((a, b) => {
-                            return b.avgRating - a.avgRating;
-                        });
-                        return res.status(200).json({ success: true, result: movie });
-                    }
-                    else {
-                        return res.status(403).json({ success: false, message: "Movie not found." });
-                    }
-                });
-        }
-        else {
-            Movie.find(req.body).exec(function (err, movie)
+        // .select is there to tell us what will be returned
+        Movie.find().exec(function (err, movie) {
+            // if we have an error then we display it
+            if(err) {
+                return res.status(401).json({message: "Something is wrong: \n", error: err});
+            }
+            // otherwise just show the movie that was returned
+            else if(movie == null)
             {
-                if (err)
-                { 
-                    res.send(err);
-                }
-
-                if(movie && movie.length > 0)
+                return res.status(404).json({success: false, message: "Error: movies not found."});
+            }
+            else 
+            {
+                if(req.query !== null && req.query.review === "true")
                 {
-                    return res.status(200).json({success: true, message: "Success: movie found! (no review parameter)", movie: movie});
+                     //console.log("query reviews: true");
+                    Movie.aggregate()
+                    .match(req.body)
+                    .lookup({from: 'reviews', localField: '_id', foreignField: 'movieid', as: 'reviews'})
+                    .exec(function (err, movie) {
+                        if (err)
+                        {
+                            return res.send(err);
+                        }
+
+                        // fix avg review scores
+                        var numOfMovies = movie.length;
+                        if (movie && numOfMovies > 0) 
+                        {
+                            movie.forEach(function(mp)
+                            {
+                                var totalSum = 0;
+                                mp.reviews.forEach(function(rp)
+                                {
+                                    // add the reviews together into one variable
+                                    totalSum = totalSum + rp.rating;
+                                });
+
+                                if(mp.reviews.length > 0)
+                                    Object.assign(mp, {avgRating: (totalSum/mp.reviews.length).toFixed(2)});
+                            });
+                            movie.sort((a,b) => {
+                                return b.avgRating - a.avgRating;
+                            });
+                            return res.status(200).json({success: true, result: movie});
+                        }
+                        else {
+                            return res.status(403).json({success: false, message: "Movie not found."});
+                        }
+                    });
                 }
                 else
                 {
-                    return res.status(404).json({success: false, message: "Error: movie not found. (no review parameter)"});
-                }            
-            })
-        }
+                    return res.status(200).json(movie);
+                }
 
+            }
+        })
     })
     // post adds a movie
-    .post(authJwtController.isAuthenticated, function (req, res) {            // create new movie
+    .post(authJwtController.isAuthenticated, function(req,res){            // create new movie
         var numOfChars = req.body.characters.length;
         var error = false;
         // goes thru character array inside of the body and makes sure that all the info is there
-        for (var i = 0; i < numOfChars; i++) {
-            if (req.body.characters[i].characterName === '' || req.body.characters[i].characterName === '') {
+        for(var i = 0; i< numOfChars;i++) {
+            if(req.body.characters[i].characterName === ''|| req.body.characters[i].characterName === '')
+            {
                 error = true;
-                if (error) {
+                if(error)
+                {
                     break;
                 }
             }
         }
         // if there are less than 3 characters in a movie it won't let you add that movie
-        if (numOfChars < 3) {
-            res.status(400).json({ success: false, msg: 'Must have at least 3 movie characters' })
+        if(numOfChars<3)
+        {
+            res.status(400).json({success: false, msg: 'Must have at least 3 movie characters'})
         }
         // if one of the fields are empty it won't let you add the movie
-        else if (req.body.title === '' || req.body.release === '' || req.body.genre === '' || error) {
-            res.status(400).json({ success: false, msg: 'Please make sure you have entered all fields' })
+        else if (req.body.title === ''|| req.body.release === '' || req.body.genre === ''|| error ){
+            res.status(400).json({success: false, msg: 'Please make sure you have entered all fields'})
             // otherwise we simply add the movie request into a temp movie
         } else {
             let mov = new Movie()
@@ -186,69 +193,77 @@ router.route('/moviecollection')
             mov.imageUrl = req.body.imageUrl;
 
             // then call a save command,
-            mov.save(function (err) {
+            mov.save(function(err){
                 // if error then something went wrong, like a movie with the same name already exists
                 if (err) {
                     console.log("sorry we ran into an error")
-                    res.status(400).json({ success: false, msg: 'we have an error posting' })
+                    res.status(400).json({success: false, msg: 'we have an error posting'})
                     throw err
                 }
                 // otherwise we are good, and the movie has been added
-                else {
-                    res.status(200).json({ success: true, msg: 'Movie added successfully' })
+                else{
+                    res.status(200).json({success: true, msg: 'Movie added successfully'})
                 }
             })
         }
     })
 
     // delete, delets a move from the database, by looking up it's name
-    .delete(authJwtController.isAuthenticated, function (req, res) {          // delete movie
+    .delete(authJwtController.isAuthenticated, function (req,res){          // delete movie
         // we call findAndRemove, which finds a movie using a title and removes it
-        Movie.findOneAndRemove({ title: req.body.title }).select('title genre release characters').exec(function (err, movie) {
+        Movie.findOneAndRemove({title: req.body.title}).select('title genre release characters').exec(function(err, movie){
             // if there is an error then something went wrong
-            if (err) {
-                res.status(400).json({ success: false, msg: 'error occured' })
+            if (err)
+            {
+                res.status(400).json({success: false, msg: 'error occured'})
                 console.log("could not delete")
                 throw err
             }
             // if the movie returned is not null then we deleted the movie successfully
-            else if (movie !== null) {
+            else if(movie !== null)
+            {
                 console.log("Movie Deleted")
-                res.status(200).json({ success: true, msg: 'movie deleted successfully' })
+                res.status(200).json({success: true, msg: 'movie deleted successfully'})
             }
             // if the mvie is returned null then we never found a movie in the database with the same name
             else {
-                res.status(400).json({ success: false, msg: 'no movie was found' })
+                res.status(400).json({success: false, msg: 'no movie was found'})
             }
         })
     })
 
     // put simply updates a movie in our database by looking up a name
-    .put(authJwtController.isAuthenticated, function (req, res) {        // updates a movie
+    .put(authJwtController.isAuthenticated, function (req,res) {        // updates a movie
         // if the body is empty then the user never submitted the request properly
         // if the title is empty then we can't look up the movie we are editing
         // if the update is empty then we don't know what to update
-        if (!req.body || !req.body.titleFind || !req.body.updateFind) {
-            return res.status(403).json({ success: false, message: "Error: Not all of the information is provided for an update" });
+        if(!req.body || !req.body.titleFind || !req.body.updateFind)
+        {
+            return res.status(403).json({success: false, message: "Error: Not all of the information is provided for an update"});
         }
         // we update the movie with given info
-        else {
+        else
+        {
             // we update the movie by the title
-            Movie.updateMany(req.body.titleFind, req.body.updateFind, function (err, movie) {
+            Movie.updateMany(req.body.titleFind, req.body.updateFind, function(err, movie)
+            {
                 JSON.stringify(movie);
                 // if an error occured then we simply cancel the operation
-                if (err) {
-                    return res.status(403).json({ success: false, message: "Error updating a movie" });
+                if(err)
+                {
+                    return res.status(403).json({success: false, message: "Error updating a movie"});
                     throw err;
                 }
                 // if movie is null then we never found the movie we were looking for
-                else if (movie.n === 0) {
-                    return res.status(404).json({ success: false, message: "Error, can't find the movie" });
+                else if(movie.n === 0)
+                {
+                    return res.status(404).json({success: false, message: "Error, can't find the movie"});
                     throw err;
                 }
                 // otherwise, if everything went well then we updated the movie
-                else {
-                    return res.status(200).json({ success: true, message: "Succsessfully updated the movie" });
+                else
+                {
+                    return res.status(200).json({success: true, message: "Succsessfully updated the movie"});
                     throw err;
                 }
             })
@@ -260,27 +275,31 @@ router.route('/moviecollection/:movieid')
     .get(authJwtController.isAuthenticated, function (req, res) {
         // find the movie using the request title
         // .select is there to tell us what will be returned
-        Movie.findOne({ _id: req.params.movieid }).exec(function (err, movie) {
+        Movie.findOne({_id: req.params.movieid}).exec(function (err, movie) {
             // if we have an error then we display it
-            if (err) {
-                return res.status(401).json({ message: "Something is wrong: \n", error: err });
+            if(err) {
+                return res.status(401).json({message: "Something is wrong: \n", error: err});
             }
             // otherwise just show the movie that was returned
-            else if (movie == null) {
-                return res.status(401).json({ success: false, message: "Error: movie not found." });
+            else if(movie == null)
+            {
+                return res.status(401).json({success: false, message: "Error: movie not found."});
             }
             else {
-                if (req.query !== null && req.query.review === "true") {
-                    Review.find({ movieid: movie.id }).select('name comment rating').exec(function (err, review) {
-                        if (err) {
-                            return res.status(403).json({ success: false, message: "Sorry we ran into an issue" });
+                if(req.query !== null && req.query.review === "true")
+                {
+                    Review.find({movieid: movie.id}).select('name comment rating').exec(function (err, review){
+                        if(err)
+                        {
+                            return res.status(403).json({success: false, message: "Sorry we ran into an issue"});
                         }
                         else {
-                            return res.status(200).json({ Movie: movie, MovieReviews: review });
+                            return res.status(200).json({Movie: movie, MovieReviews: review});
                         }
                     });
                 }
-                else {
+                else
+                {
                     return res.status(200).json(movie);
                 }
 
@@ -289,8 +308,8 @@ router.route('/moviecollection/:movieid')
     });
 
 router.route('/reviews')
-    .post(authJwtController.isAuthenticated, function (req, res) {
-        Movie.findOne({ title: req.body.title }).select('title').exec(function (err, movie) {
+    .post(authJwtController.isAuthenticated, function(req, res){
+        Movie.findOne({title: req.body.title}).select('title').exec(function (err, movie) {
 
             // My friend Oleksiy helped me with it
             let usertoken = req.headers.authorization;
@@ -298,12 +317,15 @@ router.route('/reviews')
             let decoded = jwt.verify(token[1], process.env.SECRET_KEY);
 
             // if we have an error then we display it
-            if (err) {
-                res.status(400).json({ message: "Something is wrong: \n", error: err });
+            if (err)
+            {
+                res.status(400).json({message: "Something is wrong: \n", error: err});
             }
             // otherwise just show the review that was returned
-            else {
-                if (movie != null) {
+            else
+            {
+                if(movie != null)
+                {
                     let review = new Review()
                     review.name = decoded.username;
                     review.comment = req.body.comment;
@@ -316,16 +338,17 @@ router.route('/reviews')
                     review.save(function (err) {
                         // if error then something went wrong, like a review with the same name already exists
                         if (err) {
-                            return res.status(401).json({ success: false, msg: 'we have an error posting' })
+                            return res.status(401).json({success: false, msg: 'we have an error posting'})
                         }
                         // otherwise we are good, and the movie has been added
                         else {
-                            return res.status(200).json({ success: true, msg: 'Review added successfully' })
+                            return res.status(200).json({success: true, msg: 'Review added successfully'})
                         }
                     })
                 }
-                else {
-                    return res.status(404).json({ success: false, msg: 'Error. Movie not found' });
+                else
+                {
+                    return res.status(404).json({success: false, msg:'Error. Movie not found'});
                 }
             }
         })
