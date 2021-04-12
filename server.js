@@ -292,7 +292,7 @@ router.route('/moviecollection/:movieid')
         else 
         {
             Movie.aggregate()
-            .match(req.query.movieid)
+            .match({_id: mongoose.Types.ObjectId(req.params.movieid)})
             .lookup({from: 'reviews', localField: '_id', foreignField: 'movieid', as: 'reviews'})
             .exec(function (err, movie) {
                 if (err)
