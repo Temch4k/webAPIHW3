@@ -272,7 +272,7 @@ router.route('/moviecollection/:movieid')
         // find the movie using the request title
         // .select is there to tell us what will be returned
         if(req.query == null || req.query.review !== "true"){
-            Movie.findOne({_id: req.params.movieid}).exec(function (err, movie) {
+            Movie.findOne({_id: req.query.movieid}).exec(function (err, movie) {
                 // if we have an error then we display it
                 if(err) 
                 {
@@ -292,7 +292,7 @@ router.route('/moviecollection/:movieid')
         else 
         {
             Movie.aggregate()
-            .match({_id: mongoose.Types.ObjectId(req.params.movieid)})
+            .match({ _id: mongoose.Types.ObjectId(req.query.movieid)})
             .lookup({from: 'reviews', localField: '_id', foreignField: 'movieid', as: 'reviews'})
             .exec(function (err, movie) {
                 if (err)
