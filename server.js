@@ -190,6 +190,7 @@ router.route('/moviecollection')
             mov.release = req.body.release
             mov.genre = req.body.genre
             mov.characters = req.body.characters;
+            mov.imageUrl = req.body.imageUrl;
 
             // then call a save command,
             mov.save(function(err){
