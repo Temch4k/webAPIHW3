@@ -130,23 +130,17 @@ router.route('/moviecollection')
                         var numOfMovies = movie.length;
                         if (movie && numOfMovies > 0) 
                         {
-                            movie.forEach(function(movieParam)
+                            movie.forEach(function(mp)
                             {
-                                //total reviews
-                                let reviewSum = 0;
-
-                                //calculate average
-                                //append average to movie
-
-                                //for every review, add rating
-                                movieParam.reviews.forEach(function(reviewsParam)
+                                var totalSum = 0;
+                                mp.reviews.forEach(function(rp)
                                 {
-                                    //add rating
-                                    reviewSum = reviewSum + reviewsParam.rating;
+                                    // add the reviews together into one variable
+                                    totalSum = totalSum + rp.rating;
                                 });
 
-                                if(movieParam.reviews.length > 0)
-                                    Object.assign(movieParam, {avgRating: (reviewSum/movieParam.reviews.length).toFixed(2)});
+                                if(mp.reviews.length > 0)
+                                    Object.assign(mp, {avgRating: (totalSum/mp.reviews.length).toFixed(2)});
                             });
                             movie.sort((a,b) => {
                                 return b.avgRating - a.avgRating;
@@ -275,12 +269,12 @@ router.route('/moviecollection')
         }
     })
 
-router.route('/moviecollection/:movieTitle')
+router.route('/moviecollection/:movieid')
     // gets movie information by looking up it's name
     .get(authJwtController.isAuthenticated, function (req, res) {
         // find the movie using the request title
         // .select is there to tell us what will be returned
-        Movie.findOne({title: req.params.movieTitle}).select('title genre release characters').exec(function (err, movie) {
+        Movie.findOne({_id: req.params.movieid}).select('title genre release characters').exec(function (err, movie) {
             // if we have an error then we display it
             if(err) {
                 return res.status(401).json({message: "Something is wrong: \n", error: err});
