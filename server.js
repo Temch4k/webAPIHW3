@@ -268,42 +268,6 @@ router.route('/moviecollection')
     })
 
 router.route('/moviecollection/:movieid')
-    /* // gets movie information by looking up it's name
-    .get(authJwtController.isAuthenticated, function (req, res) {
-        // find the movie using the request title
-        // .select is there to tell us what will be returned
-        Movie.findOne({_id: req.params.movieid}).exec(function (err, movie) {
-            // if we have an error then we display it
-            if(err) {
-                return res.status(401).json({message: "Something is wrong: \n", error: err});
-            }
-            // otherwise just show the movie that was returned
-            else if(movie == null)
-            {
-                return res.status(401).json({success: false, message: "Error: movie not found."});
-            }
-            else {
-                if(req.query !== null && req.query.review === "true")
-                {
-                    Review.find({movieid: movie.id}).select('name comment rating').exec(function (err, review){
-                        if(err)
-                        {
-                            return res.status(403).json({success: false, message: "Sorry we ran into an issue"});
-                        }
-                        else {
-                            return res.status(200).json({Movie: movie, MovieReviews: review});
-                        }
-                    });
-                }
-                else
-                {
-                    return res.status(200).json(movie);
-                }
-
-            }
-        })
-    });*/
-
     .get(authJwtController.isAuthenticated, function (req, res) {
         // find the movie using the request title
         // .select is there to tell us what will be returned
@@ -328,7 +292,7 @@ router.route('/moviecollection/:movieid')
         else 
         {
             Movie.aggregate()
-            .match(req.body)
+            .match(req.query.movieid)
             .lookup({from: 'reviews', localField: '_id', foreignField: 'movieid', as: 'reviews'})
             .exec(function (err, movie) {
                 if (err)
@@ -339,18 +303,14 @@ router.route('/moviecollection/:movieid')
                 var numOfMovies = movie.length;
                 if (movie && numOfMovies > 0) 
                 {
-                    movie.forEach(function(mp)
-                    {
-                        var totalSum = 0;
-                        mp.reviews.forEach(function(rp)
+                        movie.reviews.forEach(function(rp)
                         {
                             // add the reviews together into one variable
                             totalSum = totalSum + rp.rating;
                         });
 
-                        if(mp.reviews.length > 0)
-                            Object.assign(mp, {avgRating: (totalSum/mp.reviews.length).toFixed(2)});
-                    });
+                        if(movie.reviews.length > 0)
+                            Object.assign(movie, {avgRating: (totalSum/movie.reviews.length).toFixed(2)});
                     movie.sort((a,b) => {
                         return b.avgRating - a.avgRating;
                     });
