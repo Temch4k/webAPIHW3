@@ -292,7 +292,7 @@ router.route('/moviecollection/:movieid')
         else 
         {
             Movie.aggregate()
-            .match({ _id: mongoose.Types.ObjectId(req.params.movieid)})
+            .match({_id: mongoose.Types.ObjectId(req.params.movieid)})
             .lookup({from: 'reviews', localField: '_id', foreignField: 'movieid', as: 'reviews'})
             .exec(function (err, movie) {
                 if (err)
@@ -303,6 +303,7 @@ router.route('/moviecollection/:movieid')
                 var numOfMovies = movie.length;
                 if (movie && numOfMovies > 0) 
                 {
+                    let totalSum = 0;
                         movie.reviews.forEach(function(rp)
                         {
                             // add the reviews together into one variable
