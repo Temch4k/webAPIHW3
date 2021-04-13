@@ -272,7 +272,7 @@ router.route('/moviecollection/:movieid')
         // find the movie using the request title
         // .select is there to tell us what will be returned
         if(req.query == null || req.query.review !== "true"){
-            Movie.findOne({_id: req.params.movieid}).exec(function (err, movie) {
+            Movie.findOne({_id: req.params.movieid}).select("title year genre actors").exec(function (err, movie) {
                 // if we have an error then we display it
                 if(err) 
                 {
@@ -291,7 +291,7 @@ router.route('/moviecollection/:movieid')
         }
         else 
         {
-           /* Movie.aggregate()
+             Movie.aggregate()
             .match({_id: mongoose.Types.ObjectId(req.params.movieid)})
             .lookup({from: 'reviews', localField: '_id', foreignField: 'movieid', as: 'reviews'})
             .exec(function (err, movie) {
@@ -311,51 +311,19 @@ router.route('/moviecollection/:movieid')
                         });
 
                         if(movie.reviews.length > 0)
-                            Object.assign(movie, {avgRating: (totalSum/movie.reviews.length).toFixed(2)});
+                        {                            
+                            Object.assign({},movie, {avgRating: (totalSum/movie.reviews.length).toFixed(2)});
+                        }
+
                     movie.sort((a,b) => {
                         return b.avgRating - a.avgRating;
                     });
                     return res.status(200).json({success: true, result: movie});
                 }
                 else {
-                    return res.status(403).json({success: false, message: "Movies not found."});
+                    return res.status(404).json({success: false, message: "Not found."});
                 }
-            });*/
-
-            Movie.aggregate()
-                .match({_id: mongoose.Types.ObjectId(req.params.movieid)})
-                .lookup({from: 'reviews', localField: '_id', foreignField: 'movieid', as: 'reviews'})
-                .exec(function (err, movie) {
-                    if (err) return res.send(err);
-                    if (movie) {
-                        // Add avgRating
-                        for (let j = 0; j < movie.length; j++) {
-                            let total = 0;
-                            for (let i = 0; i < movie[j].reviews.length; i++) {
-                                total += movie[j].reviews[i].rating;
-                            }
-                            if (movie[j].reviews.length > 0) {
-                                movie[j] = Object.assign({}, movie[j],
-                                    {avgRating: (total/movie[j].reviews.length).toFixed(1)});
-                            }
-                        }
-                        movie.sort((a,b) => {
-                            return b.avgRating - a.avgRating;
-                        });
-                        //console.log(JSON.stringify(movie));
-                        return res.status(200).json({
-                            success: true,
-                            result: movie
-                        });
-                    }
-                    else {
-                        return res.status(403).json({
-                            success: false,
-                            message: "Movie not found. 1"
-                        });
-                    }
-                });
-
+            });
         }
     })
 
