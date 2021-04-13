@@ -143,13 +143,14 @@ router.route('/moviecollection')
                             totalSum = totalSum + rp.rating;
                         });
 
+
                         if(mp.reviews.length > 0)
-                            Object.assign(mp, {avgRating: (totalSum/mp.reviews.length).toFixed(2)});
+                            Object.assign(mp, {avgRating: totalSum});
                     });
                     movie.sort((a,b) => {
                         return b.avgRating - a.avgRating;
                     });
-                    return res.status(200).json({success: true, result: movie});
+                    return res.status(200).json({result: movie});
                 }
                 else {
                     return res.status(403).json({success: false, message: "Movies not found."});
@@ -322,7 +323,6 @@ router.route('/moviecollection/:movieid')
                         return b.avgRating - a.avgRating;
                 });
                 return res.status(200).json({
-                    success: true,
                     result: movie
                 });
             }
