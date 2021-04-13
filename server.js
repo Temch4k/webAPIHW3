@@ -303,21 +303,25 @@ router.route('/moviecollection/:movieid')
                 var numOfMovies = movie.length;
                 if (movie && numOfMovies > 0) 
                 {
-                   // Add avgRating
-                   for (let j = 0; j < movie.length; j++) {
-                    let total = 0;
-                    for (let i = 0; i < movie[j].reviews.length; i++) {
-                        total += movie[j].reviews[i].rating;
+                    // add all of the average values together
+                    for (let i = 0; i < numOfMovies; i++) 
+                    {
+                        let sum = 0;
+                        // go through all of the review values and add them
+                        for (let k = 0; k < movie[i].reviews.length; k++) 
+                        {
+                            sum = sum + movie[i].reviews[k].rating;
+                        }
+
+                        // adds the avg review to the movie
+                        if (movie[j].reviews.length > 0) {
+                            movie[j] = Object.assign({}, movie[j],
+                                {avgRating: (sum/movie[j].reviews.length).toFixed(2)});
+                        }
                     }
-                    if (movie[j].reviews.length > 0) {
-                        movie[j] = Object.assign({}, movie[j],
-                            {avgRating: (total/movie[j].reviews.length).toFixed(1)});
-                    }
-                }
-                movie.sort((a,b) => {
-                    return b.avgRating - a.avgRating;
+                    movie.sort((a,b) => {
+                        return b.avgRating - a.avgRating;
                 });
-                //console.log(JSON.stringify(movie));
                 return res.status(200).json({
                     success: true,
                     result: movie
