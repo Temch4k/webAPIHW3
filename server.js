@@ -144,8 +144,9 @@ router.route('/moviecollection')
                         });
 
 
-                        if(mp.reviews.length > 0)
+                        if(mp.reviews.length > 0){
                             Object.assign(mp, {avgRating: totalSum});
+                        }
                     });
                     movie.sort((a,b) => {
                         return b.avgRating - a.avgRating;
