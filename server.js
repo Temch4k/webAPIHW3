@@ -312,11 +312,10 @@ router.route('/moviecollection/:movieid')
                         {
                             sum = sum + movie[i].reviews[k].rating;
                         }
-
                         // adds the avg review to the movie
-                        if (movie[j].reviews.length > 0) {
-                            movie[j] = Object.assign({}, movie[j],
-                                {avgRating: (sum/movie[j].reviews.length).toFixed(2)});
+                        if (movie[i].reviews.length > 0) 
+                        {
+                            movie[i] = Object.assign({},movie[i],{avgRating: (sum/movie[i].reviews.length).toFixed(2)});
                         }
                     }
                     movie.sort((a,b) => {
