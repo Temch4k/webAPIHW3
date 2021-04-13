@@ -291,7 +291,7 @@ router.route('/moviecollection/:movieid')
         }
         else 
         {
-             Movie.aggregate()
+            Movie.aggregate()
             .match({_id: mongoose.Types.ObjectId(req.params.movieid)})
             .lookup({from: 'reviews', localField: '_id', foreignField: 'movieid', as: 'reviews'})
             .exec(function (err, movie) {
@@ -303,23 +303,26 @@ router.route('/moviecollection/:movieid')
                 var numOfMovies = movie.length;
                 if (movie && numOfMovies > 0) 
                 {
-                    let totalSum = 0;
-                        movie.reviews.forEach(function(rp)
-                        {
-                            // add the reviews together into one variable
-                            totalSum = totalSum + rp.rating;
-                        });
-
-                        if(movie.reviews.length > 0)
-                        {                            
-                            Object.assign({},movie, {avgRating: (totalSum/movie.reviews.length).toFixed(2)});
-                        }
-
-                    movie.sort((a,b) => {
-                        return b.avgRating - a.avgRating;
-                    });
-                    return res.status(200).json({success: true, result: movie});
+                   // Add avgRating
+                   for (let j = 0; j < movie.length; j++) {
+                    let total = 0;
+                    for (let i = 0; i < movie[j].reviews.length; i++) {
+                        total += movie[j].reviews[i].rating;
+                    }
+                    if (movie[j].reviews.length > 0) {
+                        movie[j] = Object.assign({}, movie[j],
+                            {avgRating: (total/movie[j].reviews.length).toFixed(1)});
+                    }
                 }
+                movie.sort((a,b) => {
+                    return b.avgRating - a.avgRating;
+                });
+                //console.log(JSON.stringify(movie));
+                return res.status(200).json({
+                    success: true,
+                    result: movie
+                });
+            }
                 else {
                     return res.status(404).json({success: false, message: "Not found."});
                 }
